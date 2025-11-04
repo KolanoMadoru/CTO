@@ -119,4 +119,58 @@ describe('Cart Component', () => {
     // Expected total: (15000 * 2) - 5000 = 25000
     expect(screen.getByText(/Total: Rp 25.000/i)).toBeInTheDocument();
   });
+
+  it('should remove item when minus button is clicked at quantity 1', () => {
+    const cart = [
+      {
+        id: 'p1',
+        name: 'Nasi Goreng',
+        price: 15000,
+        quantity: 1,
+        discount: 0,
+        stock: 10,
+      },
+    ];
+
+    render(
+      <Cart
+        cart={cart}
+        updateCartItem={mockUpdateCartItem}
+        removeFromCart={mockRemoveFromCart}
+        formatCurrency={mockFormatCurrency}
+      />
+    );
+
+    const minusButton = screen.getByText('-');
+    fireEvent.click(minusButton);
+
+    expect(mockRemoveFromCart).toHaveBeenCalledWith('p1');
+  });
+
+  it('should decrease quantity when minus button is clicked at quantity > 1', () => {
+    const cart = [
+      {
+        id: 'p1',
+        name: 'Nasi Goreng',
+        price: 15000,
+        quantity: 3,
+        discount: 0,
+        stock: 10,
+      },
+    ];
+
+    render(
+      <Cart
+        cart={cart}
+        updateCartItem={mockUpdateCartItem}
+        removeFromCart={mockRemoveFromCart}
+        formatCurrency={mockFormatCurrency}
+      />
+    );
+
+    const minusButton = screen.getByText('-');
+    fireEvent.click(minusButton);
+
+    expect(mockUpdateCartItem).toHaveBeenCalledWith('p1', { quantity: 2 });
+  });
 });
