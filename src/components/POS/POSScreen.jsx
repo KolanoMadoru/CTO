@@ -6,6 +6,7 @@ import { useApp } from '../../contexts/AppContext';
 import { t } from '../../locales/id';
 import Cart from './Cart';
 import Receipt from './Receipt';
+import BarcodeScanner from './BarcodeScanner';
 import './POSScreen.css';
 
 const POSScreen = () => {
@@ -22,6 +23,7 @@ const POSScreen = () => {
   const [lastSale, setLastSale] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [paidAmount, setPaidAmount] = useState(0);
+  const [showScanner, setShowScanner] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -44,6 +46,17 @@ const POSScreen = () => {
       setBarcodeInput('');
     } else {
       alert('Produk tidak ditemukan!');
+    }
+  };
+
+  const handleScanResult = async (barcode) => {
+    const product = await productDB.getByBarcode(barcode);
+    if (product) {
+      addToCart(product);
+      setShowScanner(false);
+    } else {
+      alert('Produk tidak ditemukan!');
+      setShowScanner(false);
     }
   };
 
@@ -201,7 +214,15 @@ const POSScreen = () => {
               className="barcode-input"
             />
             <button type="submit" className="btn-scan">
-              Scan
+              📝
+            </button>
+            <button 
+              type="button" 
+              className="btn-camera"
+              onClick={() => setShowScanner(true)}
+              title="Scan dengan Kamera"
+            >
+              📷
             </button>
           </form>
           <input
@@ -220,6 +241,11 @@ const POSScreen = () => {
               className="product-card"
               onClick={() => addToCart(product)}
             >
+              {product.image && (
+                <div className="product-image">
+                  <img src={product.image} alt={product.name} />
+                </div>
+              )}
               <div className="product-name">{product.name}</div>
               <div className="product-price">{formatCurrency(product.price)}</div>
               <div className="product-stock">Stok: {product.stock}</div>
@@ -337,6 +363,13 @@ const POSScreen = () => {
           </button>
         </div>
       </div>
+
+      {showScanner && (
+        <BarcodeScanner
+          onScan={handleScanResult}
+          onClose={() => setShowScanner(false)}
+        />
+      )}
     </div>
   );
 };

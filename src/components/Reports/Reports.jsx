@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { salesDB, productDB } from '../../utils/indexedDB';
 import { useApp } from '../../contexts/AppContext';
 import { t } from '../../locales/id';
-import { format } from 'date-fns';
+import { format, eachDayOfInterval, parseISO } from 'date-fns';
+import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import '../Products/ProductList.css';
 
 const Reports = () => {
@@ -11,6 +12,8 @@ const Reports = () => {
   const [endDate, setEndDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [sales, setSales] = useState([]);
   const [reportData, setReportData] = useState(null);
+  
+  const COLORS = ['#667eea', '#4CAF50', '#FF9800', '#f44336', '#9C27B0', '#00BCD4', '#FFC107', '#E91E63', '#3F51B5', '#8BC34A'];
 
   useEffect(() => {
     generateReport();
@@ -54,11 +57,41 @@ const Reports = () => {
       .sort((a, b) => b.revenue - a.revenue)
       .slice(0, 10);
 
+    const dailySalesMap = {};
+    const dateRange = eachDayOfInterval({ start, end });
+    dateRange.forEach(date => {
+      const dateKey = format(date, 'yyyy-MM-dd');
+      dailySalesMap[dateKey] = { date: format(date, 'dd MMM'), sales: 0, transactions: 0 };
+    });
+
+    filteredSales.forEach(sale => {
+      const dateKey = format(new Date(sale.date), 'yyyy-MM-dd');
+      if (dailySalesMap[dateKey]) {
+        dailySalesMap[dateKey].sales += sale.total;
+        dailySalesMap[dateKey].transactions += 1;
+      }
+    });
+
+    const dailySales = Object.values(dailySalesMap);
+
+    const paymentMethodData = {};
+    filteredSales.forEach(sale => {
+      const method = sale.paymentMethod || 'cash';
+      if (!paymentMethodData[method]) {
+        paymentMethodData[method] = { name: method, value: 0 };
+      }
+      paymentMethodData[method].value += sale.total;
+    });
+
+    const paymentMethods = Object.values(paymentMethodData);
+
     setReportData({
       totalSales,
       totalTransactions,
       averageTransaction,
       topProducts,
+      dailySales,
+      paymentMethods,
     });
   };
 
@@ -150,7 +183,60 @@ const Reports = () => {
             </div>
           </div>
 
-          <h3>{t('reports.topProducts')}</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px', marginBottom: '24px' }}>
+            <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+              <h3 style={{ marginTop: 0 }}>Trend Penjualan Harian</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={reportData.dailySales}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip formatter={(value) => formatCurrency(value)} />
+                  <Legend />
+                  <Line type="monotone" dataKey="sales" stroke="#667eea" name="Penjualan" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+              <h3 style={{ marginTop: 0 }}>Metode Pembayaran</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={reportData.paymentMethods}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {reportData.paymentMethods.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => formatCurrency(value)} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', marginBottom: '24px' }}>
+            <h3 style={{ marginTop: 0 }}>{t('reports.topProducts')}</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={reportData.topProducts.slice(0, 5)}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="productName" />
+                <YAxis />
+                <Tooltip formatter={(value) => formatCurrency(value)} />
+                <Legend />
+                <Bar dataKey="revenue" fill="#667eea" name="Revenue" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          <h3>{t('reports.topProducts')} - Detail</h3>
           <div className="table-container">
             <table className="data-table">
               <thead>

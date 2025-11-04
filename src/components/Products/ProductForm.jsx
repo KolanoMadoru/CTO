@@ -13,7 +13,9 @@ const ProductForm = ({ product, onSave, onCancel }) => {
     category: product?.category || '',
     description: product?.description || '',
     lowStockThreshold: product?.lowStockThreshold || 5,
+    image: product?.image || '',
   });
+  const [imagePreview, setImagePreview] = useState(product?.image || '');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,6 +24,35 @@ const ProductForm = ({ product, onSave, onCancel }) => {
       [name]: ['price', 'cost', 'stock', 'lowStockThreshold'].includes(name)
         ? Number(value)
         : value
+    }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Ukuran gambar maksimal 2MB');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result;
+        setImagePreview(base64String);
+        setFormData(prev => ({
+          ...prev,
+          image: base64String
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImagePreview('');
+    setFormData(prev => ({
+      ...prev,
+      image: ''
     }));
   };
 
@@ -134,6 +165,39 @@ const ProductForm = ({ product, onSave, onCancel }) => {
               onChange={handleChange}
               rows="3"
             />
+          </div>
+
+          <div className="form-group full-width">
+            <label>Gambar Produk</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              style={{ marginBottom: '10px' }}
+            />
+            {imagePreview && (
+              <div style={{ marginTop: '10px' }}>
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  style={{
+                    maxWidth: '200px',
+                    maxHeight: '200px',
+                    objectFit: 'cover',
+                    borderRadius: '8px',
+                    border: '1px solid #ddd'
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className="btn-secondary"
+                  style={{ marginLeft: '10px', padding: '5px 10px' }}
+                >
+                  Hapus Gambar
+                </button>
+              </div>
+            )}
           </div>
         </div>
 

@@ -68,29 +68,47 @@
 .quantity-control {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .quantity-control button {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   background: #667eea;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 20px;
+  font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s;
+}
+
+.quantity-control button:hover {
+  background: #5568d3;
+  transform: scale(1.05);
+}
+
+.quantity-control button:active {
+  transform: scale(0.95);
 }
 
 .quantity-control input {
-  width: 50px;
+  width: 60px;
   text-align: center;
-  padding: 6px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 8px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.quantity-control input:focus {
+  outline: none;
+  border-color: #667eea;
 }
 
 .cart-item-price {

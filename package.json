@@ -11,19 +11,21 @@
     "test:ui": "vitest --ui"
   },
   "dependencies": {
+    "date-fns": "^3.0.0",
+    "html5-qrcode": "^2.3.8",
+    "idb": "^8.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "idb": "^8.0.0",
-    "date-fns": "^3.0.0"
+    "recharts": "^3.3.0"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.1.5",
+    "@testing-library/react": "^14.1.2",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
+    "jsdom": "^23.0.1",
     "vite": "^5.4.10",
-    "vitest": "^1.0.0",
-    "@testing-library/react": "^14.1.2",
-    "@testing-library/jest-dom": "^6.1.5",
-    "jsdom": "^23.0.1"
+    "vitest": "^1.0.0"
   }
 }
