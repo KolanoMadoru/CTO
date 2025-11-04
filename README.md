@@ -319,6 +319,8 @@ Lihat file `src/api/stubs.js` untuk dokumentasi lengkap API contracts.
 
 ## 🌐 Deploy
 
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start)
+
 ### Build Production
 
 ```bash
@@ -329,11 +331,19 @@ Output akan ada di folder `dist/`.
 
 ### Deploy Options
 
-1. **Netlify**:
+1. **Netlify (Recommended)** ⚡:
    ```bash
+   # Via CLI
+   npm install -g netlify-cli
+   netlify login
    npm run build
-   netlify deploy --prod --dir=dist
+   netlify deploy --prod
+   
+   # Or via Git - Push ke GitHub lalu connect di Netlify Dashboard
+   # Konfigurasi sudah siap di netlify.toml
    ```
+   
+   📖 **[Panduan Lengkap Deploy ke Netlify](NETLIFY_DEPLOY.md)**
 
 2. **Vercel**:
    ```bash
@@ -344,6 +354,8 @@ Output akan ada di folder `dist/`.
 3. **Traditional Server**:
    - Upload folder `dist/` ke web server
    - Configure server untuk serve `index.html` untuk semua routes
+
+📚 Lihat [DEPLOYMENT.md](DEPLOYMENT.md) untuk panduan deployment lengkap semua platform.
 
 ## 🧪 Running Tests
 
