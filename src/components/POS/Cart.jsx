@@ -32,10 +32,16 @@ const Cart = ({ cart, updateCartItem, removeFromCart, formatCurrency }) => {
             <div className="cart-item-details">
               <div className="quantity-control">
                 <button
-                  onClick={() => updateCartItem(item.id, {
-                    quantity: Math.max(1, item.quantity - 1)
-                  })}
-                  title="Kurangi 1"
+                  onClick={() => {
+                    if (item.quantity === 1) {
+                      removeFromCart(item.id);
+                    } else {
+                      updateCartItem(item.id, {
+                        quantity: item.quantity - 1
+                      });
+                    }
+                  }}
+                  title={item.quantity === 1 ? "Hapus item" : "Kurangi 1"}
                 >
                   -
                 </button>
