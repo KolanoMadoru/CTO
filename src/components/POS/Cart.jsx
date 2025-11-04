@@ -23,6 +23,7 @@ const Cart = ({ cart, updateCartItem, removeFromCart, formatCurrency }) => {
               <button
                 className="btn-remove"
                 onClick={() => removeFromCart(item.id)}
+                title="Hapus item"
               >
                 ×
               </button>
@@ -34,21 +35,36 @@ const Cart = ({ cart, updateCartItem, removeFromCart, formatCurrency }) => {
                   onClick={() => updateCartItem(item.id, {
                     quantity: Math.max(1, item.quantity - 1)
                   })}
+                  title="Kurangi 1"
                 >
                   -
                 </button>
                 <input
                   type="number"
                   value={item.quantity}
-                  onChange={(e) => updateCartItem(item.id, {
-                    quantity: Math.max(1, parseInt(e.target.value) || 1)
-                  })}
+                  onChange={(e) => {
+                    const newQty = Math.max(1, parseInt(e.target.value) || 1);
+                    updateCartItem(item.id, { quantity: newQty });
+                  }}
                   min="1"
+                  max={item.stock}
                 />
                 <button
-                  onClick={() => updateCartItem(item.id, {
-                    quantity: item.quantity + 1
-                  })}
+                  onClick={() => {
+                    if (item.quantity < item.stock) {
+                      updateCartItem(item.id, {
+                        quantity: item.quantity + 1
+                      });
+                    } else {
+                      alert('Stok tidak mencukupi!');
+                    }
+                  }}
+                  title="Tambah 1"
+                  disabled={item.quantity >= item.stock}
+                  style={{ 
+                    background: item.quantity >= item.stock ? '#ccc' : '#667eea',
+                    cursor: item.quantity >= item.stock ? 'not-allowed' : 'pointer'
+                  }}
                 >
                   +
                 </button>
@@ -57,6 +73,66 @@ const Cart = ({ cart, updateCartItem, removeFromCart, formatCurrency }) => {
               <div className="cart-item-price">
                 {formatCurrency(item.price)}
               </div>
+            </div>
+
+            {item.quantity >= item.stock && (
+              <div style={{ fontSize: '11px', color: '#ff5722', marginTop: '4px' }}>
+                ⚠️ Stok maksimal: {item.stock}
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: '4px', marginTop: '8px', marginBottom: '8px' }}>
+              <button
+                onClick={() => updateCartItem(item.id, {
+                  quantity: Math.min(item.stock, item.quantity + 5)
+                })}
+                style={{
+                  padding: '4px 8px',
+                  fontSize: '11px',
+                  background: '#4CAF50',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+                disabled={item.quantity >= item.stock}
+              >
+                +5
+              </button>
+              <button
+                onClick={() => updateCartItem(item.id, {
+                  quantity: Math.min(item.stock, item.quantity + 10)
+                })}
+                style={{
+                  padding: '4px 8px',
+                  fontSize: '11px',
+                  background: '#4CAF50',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+                disabled={item.quantity >= item.stock}
+              >
+                +10
+              </button>
+              <button
+                onClick={() => updateCartItem(item.id, {
+                  quantity: item.stock
+                })}
+                style={{
+                  padding: '4px 8px',
+                  fontSize: '11px',
+                  background: '#FF9800',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+                disabled={item.quantity >= item.stock}
+              >
+                Max
+              </button>
             </div>
 
             <div className="cart-item-discount">

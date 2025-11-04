@@ -49,6 +49,7 @@ export const translations = {
   'products.category': 'Kategori',
   'products.description': 'Deskripsi',
   'products.lowStock': 'Stok Rendah',
+  'products.image': 'Gambar Produk',
   'products.save': 'Simpan',
   'products.cancel': 'Batal',
 
