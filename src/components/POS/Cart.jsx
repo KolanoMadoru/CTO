@@ -2,7 +2,7 @@ import React from 'react';
 import { t } from '../../locales/id';
 import './Cart.css';
 
-const Cart = ({ cart, updateCartItem, removeFromCart, formatCurrency }) => {
+const Cart = ({ cart, updateCartItem, removeFromCart, formatCurrency, clearCart }) => {
   if (cart.length === 0) {
     return (
       <div className="cart-container">
@@ -14,7 +14,16 @@ const Cart = ({ cart, updateCartItem, removeFromCart, formatCurrency }) => {
 
   return (
     <div className="cart-container">
-      <h3>{t('pos.cart')}</h3>
+      <div className="cart-header">
+        <h3>{t('pos.cart')}</h3>
+        <button 
+          className="btn-clear-cart" 
+          onClick={clearCart}
+          title="Hapus Semua Item"
+        >
+          🗑️ Hapus Semua
+        </button>
+      </div>
       <div className="cart-items">
         {cart.map(item => (
           <div key={item.id} className="cart-item">
