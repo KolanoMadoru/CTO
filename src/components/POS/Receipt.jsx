@@ -76,10 +76,6 @@ const Receipt = ({ sale, settings, onClose }) => {
                 <span>-{formatCurrency(sale.discountAmount)}</span>
               </div>
             )}
-            <div className="receipt-row">
-              <span>{t('receipt.tax')}:</span>
-              <span>{formatCurrency(sale.taxAmount)}</span>
-            </div>
             <div className="receipt-row grand-total">
               <strong>{t('receipt.grandTotal')}:</strong>
               <strong>{formatCurrency(sale.total)}</strong>

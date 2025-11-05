@@ -88,6 +88,12 @@ const POSScreen = () => {
     setCart(cart.filter(item => item.id !== productId));
   };
 
+  const clearCart = () => {
+    if (confirm('Hapus semua item dari keranjang?')) {
+      setCart([]);
+    }
+  };
+
   const calculateSubtotal = () => {
     return cart.reduce((sum, item) => {
       const itemTotal = (item.price * item.quantity) - item.discount;
@@ -95,13 +101,8 @@ const POSScreen = () => {
     }, 0);
   };
 
-  const calculateTax = () => {
-    const subtotal = calculateSubtotal() - discountAmount;
-    return (subtotal * settings.taxRate) / 100;
-  };
-
   const calculateTotal = () => {
-    return calculateSubtotal() - discountAmount + calculateTax();
+    return calculateSubtotal() - discountAmount;
   };
 
   const handleCheckout = async () => {
@@ -136,7 +137,7 @@ const POSScreen = () => {
         })),
         subtotal: calculateSubtotal(),
         discountAmount: discountAmount,
-        taxAmount: calculateTax(),
+        taxAmount: 0,
         total: total,
         paymentMethod: paymentMethod,
         paidAmount: paymentMethod === 'cash' ? paidAmount : total,
@@ -277,6 +278,7 @@ const POSScreen = () => {
           cart={cart}
           updateCartItem={updateCartItem}
           removeFromCart={removeFromCart}
+          clearCart={clearCart}
           formatCurrency={formatCurrency}
         />
 
@@ -294,10 +296,6 @@ const POSScreen = () => {
               className="discount-input"
               min="0"
             />
-          </div>
-          <div className="total-row">
-            <span>{t('pos.tax')} ({settings.taxRate}%)</span>
-            <span>{formatCurrency(calculateTax())}</span>
           </div>
           <div className="total-row grand-total">
             <span>{t('pos.total')}</span>
